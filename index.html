@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="laps.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css"
+        integrity="sha384-cg6SkqEOCV1NbJoCu11+bm0NvBRc8IYLRGXkmNrqUBfTjmMYwNKPWBTIKyw9mHNJ" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/js-joda@1.11.0/dist/js-joda.min.js"></script>
+    <script>
+        // copy all js-joda classes to the global scope
+        var jsJoda = JSJoda;
+        for (var prop in jsJoda) { window[prop] = jsJoda[prop]; }
+    </script>
+</head>
+
+<body>
+    <form autocomplete="off" class="pure-form pure-form-aligned" id="laps">
+        <fieldset>
+            <div class="pure-controls" id="submit-button">
+                <button type="submit" class="pure-button pure-button-primary">Submit</button>
+            </div>
+        </fieldset>
+    </form>
+
+    <div class="pure-controls" id="submit-button">
+        <textarea class="pure-input-1-2" id="result-text" rows="20" style="width:50%; height:100%"
+            placeholder=""></textarea>
+        <button class="pure-button pure-button-primary" onclick="copyText()">Copy</button>
+    </div>
+
+    <template id="input-group">
+        <div class="pure-control-group">
+            <label></label>
+            <input type="text" placeholder="Enter laptime" pattern="(\s+)?([0-9]{1,2}:)?[0-9]{1,2}(\.[0-9]+)?(\s+)?"
+                title="Invalid laptime! Times should be formatted as minutes:seconds.milliseconds (For example 40.983 or 1:32.987)" />
+        </div>
+    </template>
+</body>
+
+</html>
