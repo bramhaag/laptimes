@@ -105,7 +105,7 @@ function generateLapTimes(form) {
 
     let offset = offsetInput.value.trim() === "" ? Duration.ZERO : Duration.parse(formatDuration(offsetInput.value.trim()));
     let currentTime = offset;
-    let result = "";
+    let result = "00:00:00 Start\n";
 
     for (let i = 0; i < lapTimes.length; i++) {
         let time = lapTimes[i];
