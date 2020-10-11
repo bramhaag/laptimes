@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="laps.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css"
-        integrity="sha384-cg6SkqEOCV1NbJoCu11+bm0NvBRc8IYLRGXkmNrqUBfTjmMYwNKPWBTIKyw9mHNJ" crossorigin="anonymous">
+    <title>Laptime Generator</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <script src="https://kit.fontawesome.com/526cef58ce.js" crossorigin="anonymous"></script>
+    <script src="lap_parser.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-joda@1.11.0/dist/js-joda.min.js"></script>
     <script>
         // copy all js-joda classes to the global scope
@@ -17,25 +17,71 @@
 </head>
 
 <body>
-    <form autocomplete="off" class="pure-form pure-form-aligned" id="laps">
-        <fieldset>
-            <div class="pure-controls" id="submit-button">
-                <button type="submit" class="pure-button pure-button-primary">Submit</button>
+    <div class="container">
+        <div class="box">
+            <div class="tabs is-centered">
+                <ul id="tabs-list">
+                </ul>
             </div>
-        </fieldset>
-    </form>
-
-    <div class="pure-controls" id="submit-button">
-        <textarea class="pure-input-1-2" id="result-text" rows="20" style="width:50%; height:100%"
-            placeholder=""></textarea>
-        <button class="pure-button pure-button-primary" onclick="copyText()">Copy</button>
+            <section id="laps-section" class="section">
+                <div id="sessions"></div>
+                <div id="button-group">
+                    <div class="has-text-centered has-text-grey-light block">
+                        <h6 class="subtitle is-6"><span class="icon has-text-info">
+                                <i class="fas fa-info-circle"></i>
+                            </span>
+                            More input fields will appear when you enter laps.</h6>
+                    </div>
+                    <div class="field is-grouped is-grouped-centered">
+                        <p class="control">
+                            <a id="submit-description" class="button is-primary" onclick="generateDescription()">Generate Description</a>
+                        </p>
+                        <p class="control">
+                            <a id="submit-subtitles" class="button is-primary" onclick="generateSubtitles()">Download Subtitles</a>
+                        </p>
+                        <p class="control">
+                            <a class="button is-light" onclick="clearLaps()">
+                                Clear
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section id="result-section" class="section">
+                <div class="block">
+                    <textarea id="result-text" class="textarea"
+                        placeholder="Your lap times will appear here!"></textarea>
+                </div>
+                <div id="button-group" class="field is-grouped is-grouped-centered">
+                    <p class="control">
+                        <a class="button is-primary" onclick="copyText()">
+                            Copy
+                        </a>
+                    </p>
+                </div>
+            </section>
+        </div>
     </div>
 
-    <template id="input-group">
-        <div class="pure-control-group">
-            <label></label>
-            <input type="text" placeholder="Enter time" pattern="(\s+)?([0-9]{1,2}:)?[0-9]{1,2}(\.[0-9]+)?(\s+)?"
-                title="Invalid laptime! Times should be formatted as minutes:seconds.milliseconds (For example 40.983 or 1:32.987)" />
+    <template id="session">
+        <section class="section">
+            <h1 class="title" style="margin-bottom:0"></h1>
+            <a style="display:block;margin-bottom:1.5rem">Import from MYLAPS Speedhive CSV</a>
+        </div>
+    </template>
+
+    <template id="lap-input">
+        <div class="field is-horizontal">
+            <div class="field-label is-normal">
+                <label class="label"></label>
+            </div>
+            <div class="field-body">
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text">
+                    </div>
+                </div>
+            </div>
         </div>
     </template>
 </body>
