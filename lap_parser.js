@@ -90,7 +90,7 @@ function addLaps(parent, session, laps, lapOffset = 0) {
 }
 
 function addOffsetInput(parent, session) {
-    return addInput(parent, `${session}-offset`, "Offset", {
+    return addInput(parent, `${session}-offset`, "Time before start", {
         helpPattern: OFFSET_PATTERN,
         helpMessage: "Invalid offset time! Valid format: (minutes):[seconds]. For example: 40 or 1:32"
     })
