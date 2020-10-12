@@ -65,6 +65,12 @@ function setTab(id) {
         addOffsetInput(sessionSection, sessionName);
         addLapInput(sessionSection, sessionName, 0);
 
+        let sessionCsv = session.querySelector("input");
+        sessionCsv.onchange = () => parseCsv(sessionSection, sessionName);
+
+        let sessionCsvButton = session.querySelector("a");
+        sessionCsvButton.onclick = () => sessionCsv.click();
+
         sessionParent.appendChild(session);
     });
 
@@ -124,6 +130,23 @@ function addInput(parent, id, title) {
     parent.appendChild(inputGroup);
 
     return input;
+}
+
+function parseCsv(parent, session) {
+    let files = document.getElementById("csv-input").files;
+    if (files.length === 0) {
+        return;
+    }
+
+    Papa.parse(files[0], {
+        header: true,
+        complete: (results) => {
+            let laps = results.data
+                .map(lap => lap["Lap Time"])
+            
+            addLaps(parent, session, laps);
+        }
+    })
 }
 
 function generateDescription() {
