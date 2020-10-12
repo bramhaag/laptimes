@@ -13,6 +13,8 @@ const LAPTIME_FORMAT = "HH:mm:ss.SSS";
 const TIMESTAMP_FORMAT = "HH:mm:ss";
 const SUBTITLE_FORMAT = "HH:mm:ss,SSS";
 
+const MIN_CHAPTER_LENGTH = 10;
+
 let currentTab;
 
 onload = () => {
@@ -152,7 +154,12 @@ function parseCsv(parent, session) {
 function generateDescription() {
     let laps = parseLaps(TAB_CONTENT[currentTab].sessions);
 
+    if (laps[0].end.minusDuration(laps[0].start).minusSeconds(MIN_CHAPTER_LENGTH).isNegative()) {
+        laps[1].start = Duration.ZERO;
+    }
+
     document.getElementById("result-text").value = laps
+        .filter(lap => !lap.end.minusDuration(lap.start).minusSeconds(MIN_CHAPTER_LENGTH).isNegative())
         .map(lap =>`${toHuman(lap.start, TIMESTAMP_FORMAT, false)} ${lap.description}`)
         .join("\n");
 }
