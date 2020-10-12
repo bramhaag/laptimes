@@ -128,11 +128,29 @@ function addInput(parent, id, title) {
 
 function generateDescription() {
     let laps = parseLaps(TAB_CONTENT[currentTab].sessions);
-    let description = "";
 
     document.getElementById("result-text").value = laps
         .map(lap =>`${toHuman(lap.start, TIMESTAMP_FORMAT, false)} ${lap.description}`)
         .join("\n");
+}
+
+function generateSubtitles() {
+    let subtitles = parseLaps(TAB_CONTENT[currentTab].sessions)
+        .map((lap, i) => `${i+1}\n${toHuman(lap.start, SUBTITLE_FORMAT, false)} --> ${toHuman(lap.end, SUBTITLE_FORMAT, false)}\n${lap.description}`)
+        .join("\n\n");
+
+    let fileName = `subtitles_${currentTab}_${LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).toString().replace("T", "_")}.srt`
+
+    let downloadElement = document.createElement('a');
+    downloadElement.setAttribute('href', 'data:text/srt;charset=utf-8,' + encodeURIComponent(subtitles));
+    downloadElement.setAttribute('download', fileName);
+    
+    downloadElement.style.display = 'none';
+    document.body.appendChild(downloadElement);
+    
+    downloadElement.click();
+    
+    document.body.removeChild(downloadElement);
 }
 
 function parseLaps(sessions) {
