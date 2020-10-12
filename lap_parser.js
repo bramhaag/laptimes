@@ -13,6 +13,11 @@ const LAPTIME_FORMAT = "HH:mm:ss.SSS";
 const TIMESTAMP_FORMAT = "HH:mm:ss";
 const SUBTITLE_FORMAT = "HH:mm:ss,SSS";
 
+const MIN_CHAPTER_LENGTH = 10;
+
+const OFFSET_PATTERN = "(\s+)?([0-9]{1,2}:)?[0-9]{1,2}(\s+)?"
+const LAP_PATTERN = "(\s+)?([0-9]{1,2}:)?[0-9]{1,2}(\.[0-9]+)?(\s+)?"
+
 let currentTab;
 
 onload = () => {
@@ -85,11 +90,17 @@ function addLaps(parent, session, laps, lapOffset = 0) {
 }
 
 function addOffsetInput(parent, session) {
-    return addInput(parent, `${session}-offset`, "Offset")
+    return addInput(parent, `${session}-offset`, "Time before start", {
+        helpPattern: OFFSET_PATTERN,
+        helpMessage: "Invalid offset time! Valid format: (minutes):[seconds]. For example: 40 or 1:32"
+    })
 }
 
 function addLapInput(parent, session, i) {
-    let input = addInput(parent, `${session}-lap-${i}`, `Lap ${i + 1}`);
+    let input = addInput(parent, `${session}-lap-${i}`, `Lap ${i + 1}`, {
+        helpPattern: LAP_PATTERN,
+        helpMessage: "Invalid lap time! Valid format: (minutes):[seconds]:(milliseconds). For example: 40.983 or 1:32.987"
+    });
 
     input.oninput = () => {
         addLapInput(parent, session, i + 1);
@@ -110,7 +121,7 @@ function addLapInput(parent, session, i) {
     return input;
 }
 
-function addInput(parent, id, title) {
+function addInput(parent, id, title, options = {}) {
     let existingInput = document.getElementById(id);
     if (existingInput !== null) {
         return existingInput;
@@ -126,6 +137,23 @@ function addInput(parent, id, title) {
     // Set the input ID
     let input = inputGroup.querySelector("input");
     input.id = id;
+
+    if (options.helpPattern !== undefined) {
+        input.pattern = options.helpPattern;
+
+        let helpText = inputGroup.querySelector("p.help");
+        helpText.textContent = options.helpMessage;
+
+        input.onchange = () => {
+            if (input.validity.valid) {
+                input.classList.remove("is-danger");
+                helpText.classList.add("is-hidden");
+            } else {
+                input.classList.add("is-danger");
+                helpText.classList.remove("is-hidden");
+            }
+        }
+    }
 
     parent.appendChild(inputGroup);
 
@@ -152,7 +180,12 @@ function parseCsv(parent, session) {
 function generateDescription() {
     let laps = parseLaps(TAB_CONTENT[currentTab].sessions);
 
+    if (laps[0].end.minusDuration(laps[0].start).minusSeconds(MIN_CHAPTER_LENGTH).isNegative()) {
+        laps[1].start = Duration.ZERO;
+    }
+
     document.getElementById("result-text").value = laps
+        .filter(lap => !lap.end.minusDuration(lap.start).minusSeconds(MIN_CHAPTER_LENGTH).isNegative())
         .map(lap =>`${toHuman(lap.start, TIMESTAMP_FORMAT, false)} ${lap.description}`)
         .join("\n");
 }
