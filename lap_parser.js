@@ -15,7 +15,8 @@ const SUBTITLE_FORMAT = "HH:mm:ss,SSS";
 
 const MIN_CHAPTER_LENGTH = 10;
 
-const TIME_PATTERN = "(\s+)?([0-9]{1,2}:)?[0-9]{1,2}(\.[0-9]+)?(\s+)?"
+const OFFSET_PATTERN = "(\s+)?([0-9]{1,2}:)?[0-9]{1,2}(\s+)?"
+const LAP_PATTERN = "(\s+)?([0-9]{1,2}:)?[0-9]{1,2}(\.[0-9]+)?(\s+)?"
 
 let currentTab;
 
@@ -89,13 +90,16 @@ function addLaps(parent, session, laps, lapOffset = 0) {
 }
 
 function addOffsetInput(parent, session) {
-    return addInput(parent, `${session}-offset`, "Offset")
+    return addInput(parent, `${session}-offset`, "Offset", {
+        helpPattern: OFFSET_PATTERN,
+        helpMessage: "Invalid offset time! Valid format: (minutes):[seconds]. For example: 40 or 1:32"
+    })
 }
 
 function addLapInput(parent, session, i) {
     let input = addInput(parent, `${session}-lap-${i}`, `Lap ${i + 1}`, {
-        helpPattern: TIME_PATTERN,
-        helpMessage: "Invalid lap time! Valid examples: 40.983 or 1:32.987"
+        helpPattern: LAP_PATTERN,
+        helpMessage: "Invalid lap time! Valid format: (minutes):[seconds]:(milliseconds). For example: 40.983 or 1:32.987"
     });
 
     input.oninput = () => {
