@@ -27,7 +27,7 @@ onload = () => {
 function initializeTabs() {
     let tabs = document.getElementById("tabs-list");
 
-    for(const [id, type] of Object.entries(TAB_CONTENT)) {
+    for (const [id, type] of Object.entries(TAB_CONTENT)) {
         let tab = document.createElement("li")
         tab.id = `tab-${id}`;
         tab.onclick = () => setTab(id);
@@ -44,11 +44,11 @@ function initializeTabs() {
 
 function setTab(id) {
     // Set active tab
-    let tabs = document.getElementById("tabs-list"); 
+    let tabs = document.getElementById("tabs-list");
     tabs.querySelectorAll("li").forEach((elem) => {
         elem.className = elem.id === `tab-${id}` ? "is-active" : "";
     });
-    
+
     // Clear
     let sessionParent = document.getElementById("sessions");
     sessionParent.innerHTML = "";
@@ -71,7 +71,7 @@ function setTab(id) {
         addLapInput(sessionSection, sessionName, 0);
 
         let sessionCsv = session.querySelector("input");
-        sessionCsv.onchange = () => parseCsv(sessionSection, sessionName);
+        sessionCsv.onchange = () => parseCsv(sessionCsv, sessionSection, sessionName);
 
         let sessionCsvButton = session.querySelector("a");
         sessionCsvButton.onclick = () => sessionCsv.click();
@@ -110,7 +110,7 @@ function addLapInput(parent, session, i) {
         // Stop data actually being pasted into div
         e.stopPropagation();
         e.preventDefault();
-    
+
         // Get pasted data via clipboard API
         let clipboardData = e.clipboardData || window.clipboardData;
         let pastedData = clipboardData.getData('Text');
@@ -160,8 +160,8 @@ function addInput(parent, id, title, options = {}) {
     return input;
 }
 
-function parseCsv(parent, session) {
-    let files = document.getElementById("csv-input").files;
+function parseCsv(input, parent, session) {
+    let files = input.files;
     if (files.length === 0) {
         return;
     }
@@ -171,7 +171,7 @@ function parseCsv(parent, session) {
         complete: (results) => {
             let laps = results.data
                 .map(lap => lap["Lap Time"])
-            
+
             addLaps(parent, session, laps);
         }
     })
@@ -186,7 +186,7 @@ function generateDescription() {
 
     document.getElementById("result-text").value = laps
         .filter(lap => !lap.end.minusDuration(lap.start).minusSeconds(MIN_CHAPTER_LENGTH).isNegative())
-        .map(lap =>`${toHuman(lap.start, TIMESTAMP_FORMAT, false)} ${lap.description}`)
+        .map(lap => `${toHuman(lap.start, TIMESTAMP_FORMAT, false)} ${lap.description}`)
         .join("\n");
 }
 
@@ -200,12 +200,12 @@ function generateSubtitles() {
     let downloadElement = document.createElement('a');
     downloadElement.setAttribute('href', 'data:text/srt;charset=utf-8,' + encodeURIComponent(subtitles));
     downloadElement.setAttribute('download', fileName);
-    
+
     downloadElement.style.display = 'none';
     document.body.appendChild(downloadElement);
-    
+
     downloadElement.click();
-    
+
     document.body.removeChild(downloadElement);
 }
 
@@ -227,7 +227,7 @@ function parseLaps(sessions) {
             .map(input => input.value.trim())
             .filter(input => input !== "")
             .map(input => toDuration(input));
-        
+
         let fastestLap = getFastestLap(lapTimes);
 
         for (const [i, lapTime] of lapTimes.entries()) {
@@ -250,7 +250,7 @@ function parseLaps(sessions) {
 function getOffset(session) {
     try {
         return toDuration(document.getElementById(`${session}-offset`).value.trim());
-    } catch(e) {
+    } catch (e) {
         return Duration.ZERO;
     }
 }
@@ -259,7 +259,7 @@ function getFastestLap(lapTimes) {
     return [...lapTimes].sort((a, b) => a.compareTo(b))[0];
 }
 
-function toHuman(duration, format, truncate=true) {
+function toHuman(duration, format, truncate = true) {
     let timeString = LocalTime.ofNanoOfDay(duration.toNanos()).format(DateTimeFormatter.ofPattern(format));
 
     while (truncate && timeString.startsWith("00:")) {
